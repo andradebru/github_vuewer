@@ -11,7 +11,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="issue in issues" :key="issue.number">
+                  <tr v-for="issue in directories" :key="issue.number">
                     <td>{{ issue.number }}</td>
                     <td>{{ issue.title }}</td>
                   </tr>
@@ -23,7 +23,7 @@
       <v-row>
         <v-col cols="12">
           <v-progress-circular indeterminate color="primary" v-if="loading"></v-progress-circular>
-          <v-btn color="primary" v-if="temmais" @click="listaIssues">MAIS</v-btn>
+          <v-btn color="primary" v-if="temmais" @click="lista_directories">MAIS</v-btn>
         </v-col>
       </v-row>
     </div>
@@ -36,30 +36,30 @@
     export default {
       props: ['repo'],
       data: () => ({
-        issues: [],
+        directories: [],
         loading: false,
         temmais: false,
         currentPage: 1
       }),
       methods: {
-        async listaIssues(){
+        async lista_directories(){
           this.loading = true
-          const maisissues = await api.listaIssues(this.repo.owner.login, this.repo.name, this.currentPage)
-          this.issues = this.issues.concat(maisissues)
+          const mais_directories = await api.lista_directories(this.repo.owner.login, this.repo.name, this.currentPage)
+          this.directories = this.directories.concat(mais_directories)
           this.currentPage++
           this.loading = false
-          this.temmais = maisissues.length > 0
+          this.temmais = mais_directories.length > 0
         }
       },
       watch: {
         repo(){
-          this.issues = []
+          this.directories = []
           if (this.repo) {
             this.temmais = false
             this.currentPage = 1
-            this.listaIssues()
+            this.lista_directories()
           } else {
-            this.issues = []
+            this.directories = []
             this.temmais = false
             this.currentPage = 1
           }
