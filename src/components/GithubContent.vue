@@ -14,6 +14,9 @@
                   <tr v-for="content in contents" :key="content.number">
                     <td>{{ content.name }}</td>
                     <!-- <td>{{ content.title }}</td> -->
+                    <td v-if="content.type == 'dir'"> 
+                      <v-btn @click="open_directory(content)" color="primary">abrir</v-btn>
+                    </td>
                   </tr>
                 </tbody>
               </template>
@@ -39,7 +42,9 @@
         contents: [],
         loading: false,
         temmais: false,
-        currentPage: 1
+        currentPage: 1,
+        files: [],
+        current_content: ''
       }),
       methods: {
         async lista_content(){
@@ -49,7 +54,17 @@
           this.currentPage++
           this.loading = false
           this.temmais = maiscontents.length > 0
-        }
+        },
+        async open_directory(content) {
+          this.loading = true
+          let path = content.path
+          let cont = this.repo.owner.login
+          let repo_name = this.repo.name
+          this.contents = await api.open_directory(cont, repo_name, path)
+          this.files.push(path)
+          this.current_content = path
+          this.loading = false
+        },
       },
       watch: {
         repo(){

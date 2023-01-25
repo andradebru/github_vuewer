@@ -36,4 +36,9 @@ export const api = {
     const response = await fetch(url);
     return await response.json();
   },
+  async open_directory(owner, name, dir) {
+    const url = `https://api.github.com/repos/${owner}/${name}/contents/${dir}`;
+    const response = await fetch(url);
+    return await response.json();
+  },
 };
