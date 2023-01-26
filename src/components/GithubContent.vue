@@ -5,17 +5,17 @@
             <v-simple-table>
               <template v-slot:default>
                 <thead>
-                  <tr>
-                    <th class="text-left">Number</th>
-                    <!-- <th class="text-left">Title</th> -->
-                  </tr>
+                    <th class="text-left">{{ repo.name.toUpperCase() }}</th>
+                    <!-- <th class="text-left">{{ breadcrumb.toUpperCase() }}</th> -->
                 </thead>
                 <tbody>
                   <tr v-for="content in contents" :key="content.number">
-                    <td>{{ content.name }}</td>
-                    <!-- <td>{{ content.title }}</td> -->
-                    <td v-if="content.type == 'dir'"> 
-                      <v-btn @click="open_directory(content)" color="primary">abrir</v-btn>
+                    <td>
+                      {{ content.name }}
+                      <v-btn x-small plain @click="open_directory(content)" color="primary"
+                      v-if="content.type == 'dir'">|
+                        abrir
+                      </v-btn>
                     </td>
                   </tr>
                 </tbody>
@@ -27,6 +27,7 @@
         <v-col cols="12">
           <v-progress-circular indeterminate color="secondary" v-if="loading"></v-progress-circular>
           <v-btn color="primary" v-if="temmais" @click="lista_content">MAIS</v-btn>
+          <v-btn v-if="files.length > 0" @click="back_to_dir">Voltar</v-btn>
         </v-col>
       </v-row>
     </div>
@@ -60,11 +61,22 @@
           let path = content.path
           let cont = this.repo.owner.login
           let repo_name = this.repo.name
+          let files = this.files
           this.contents = await api.open_directory(cont, repo_name, path)
-          this.files.push(path)
+          files.push(path)
           this.current_content = path
           this.loading = false
         },
+        async back_to_dir() {
+          let files = this.files
+          this.loading = true
+          files.pop()
+          let previous_content = files.length == 1 ? files[0] : files[-1]
+          if (previous_content == undefined) previous_content = '';
+          this.contents = await api.open_directory(this.repo.owner.login, this.repo.name, previous_content)
+          this.current_content = previous_content
+          this.loading = false
+        }
       },
       watch: {
         repo(){
